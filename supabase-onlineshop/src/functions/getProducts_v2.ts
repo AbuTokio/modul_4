@@ -14,7 +14,6 @@ export async function getProductAndCategories(): Promise<Product[]> {
 
   if (error) console.error(error)
 
-  console.log(products)
   return products as unknown as Product[]
 }
 
@@ -36,8 +35,6 @@ export async function getCart(): Promise<Cart> {
 
   if (error) console.error(error)
 
-  console.log(cart)
-
   return cart as unknown as Cart
 }
 
@@ -49,8 +46,6 @@ export async function getCategory(): Promise<Category> {
     `)
 
   if (error) console.error(error)
-
-  console.log(category)
 
   return category as unknown as Category
 }

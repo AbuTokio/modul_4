@@ -5,7 +5,7 @@ import supabase from "../utils/supabase"
 // SELECT * FROM products;
 
 export async function getProducts_store(): Promise<Product[]> {
-  const { data: products, error } = await supabase.from("products").select("*").textSearch("title", "laptop | maus")
+  const { data: products, error } = await supabase.from("products").select("*")
 
   if (error) console.error(error)
 
