@@ -4,5 +4,5 @@ export interface Cart {
   id: number
   cart_id: number
   quantity: number
-  products: Product[]
+  products: Product
 }

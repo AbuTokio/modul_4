@@ -5,8 +5,8 @@ import type { Cart } from "../interfaces/Cart"
 
 export interface MainContextProps {
   products: Product[]
-  cart: Cart | null
-  setCart: React.Dispatch<React.SetStateAction<Cart | null>>
+  cart: Cart[] | null | undefined | unknown
+  setCart: React.Dispatch<React.SetStateAction<Cart[] | null | undefined | unknown>>
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -14,7 +14,7 @@ export const mainContext = createContext<MainContextProps | null>(null)
 
 export default function MainProvider({ children }: { children: React.ReactNode }) {
   const [products, setProducts] = useState<Product[]>([])
-  const [cart, setCart] = useState<Cart | null>(null)
+  const [cart, setCart] = useState<Cart[] | null | undefined | unknown>([])
 
   useEffect(() => {
     const getData_In_useEffect = async () => {
