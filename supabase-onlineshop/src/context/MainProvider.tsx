@@ -3,6 +3,7 @@ import type { Product } from "../interfaces/Product"
 import { getProducts_store } from "../functions/getProduct"
 import type { Cart } from "../interfaces/Cart"
 import type { User } from "../interfaces/User"
+import supabase from "../utils/supabase"
 
 export interface MainContextProps {
   products: Product[]
@@ -26,7 +27,7 @@ export default function MainProvider({ children }: { children: React.ReactNode }
   // % NEW
   const [user, setUser] = useState<User | null>(null)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const getData_In_useEffect = async () => {
@@ -40,6 +41,42 @@ export default function MainProvider({ children }: { children: React.ReactNode }
     }
 
     getData_In_useEffect()
+  }, [])
+
+  useEffect(() => {
+    // % Wir holen einmalig den gespeicherten Zustand (z.B. beim Reload oder einloggen).
+    // supabase prüft ob im Browser eine gültige Session gespeichert ist.
+    // Wenn ja, dann liefert sie den eingeloggten User zurück.
+    // Wenn nein, dann User = null.
+
+    const checkSession = async () => {
+      setLoading(true)
+      const { data } = await supabase.auth.getSession()
+      const session = data?.session
+      if (session?.user) {
+        setUser(session?.user as unknown as User)
+        setIsLoggedIn(true)
+      } else {
+        setUser(null)
+        setIsLoggedIn(false)
+      }
+      setLoading(false)
+    }
+    checkSession()
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      // console.log(_event)
+      // console.log(session)
+      setUser(session?.user as unknown as User)
+      setIsLoggedIn(!!session?.user)
+      setLoading(false)
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
   }, [])
 
   const value: MainContextProps = {

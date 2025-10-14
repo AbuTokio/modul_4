@@ -1,9 +1,20 @@
 import { useContext } from "react"
+import { NavLink, useNavigate } from "react-router"
+import supabase from "../../utils/supabase"
 import { mainContext, type MainContextProps } from "../../context/MainProvider"
-import { NavLink } from "react-router"
 
 export default function Header() {
   const { isLoggedIn, setIsLoggedIn } = useContext(mainContext) as MainContextProps
+  const navigate = useNavigate()
+
+  const logOut = async () => {
+    const { error } = await supabase.auth.signOut()
+    if (error) {
+      console.log("Logout funktioniert nicht", error)
+    }
+    setIsLoggedIn(false)
+    navigate("/")
+  }
 
   return (
     <header className="bg-white dark:bg-gray-900 shadow-md">
@@ -26,6 +37,15 @@ export default function Header() {
             }>
             Profile
           </NavLink>
+
+          <NavLink
+            to="/cart"
+            className={({ isActive }) =>
+              `font-medium ${isActive ? "text-blue-600" : "text-gray-700 dark:text-gray-300 hover:text-blue-500"}`
+            }>
+            Cart
+          </NavLink>
+
           {!isLoggedIn ? (
             <>
               <NavLink

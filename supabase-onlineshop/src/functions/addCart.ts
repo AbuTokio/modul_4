@@ -1,13 +1,24 @@
 import supabase from "../utils/supabase"
 
-export async function addCart(productId: number) {
+export async function addCart(userId: string | undefined, productId: number) {
+  // ~ Wir prüfen zuerst, ob ein Warenkorb für den User existiert.
+
+  // % NEW
+
+  const { data: cart, error: cartError } = await supabase.from("carts").select("*").eq("customer_id", userId)
+
+  if (cartError) console.error("Fehler beim Laden des Warenkorbs:", cartError)
+
+  console.log(cart)
+
+  const cartId = cart?.[0].id
+
   // ~ Wir prüfen, ob das Produkt bereits im Warenkorb ist
 
   const { data: itemExists, error: errorItem } = await supabase
     .from("cart_items")
     .select("*")
-    // cart_id 1 ist hardcodiert, da wir noch kein User-Management haben.
-    .eq("cart_id", 1)
+    .eq("cart_id", cartId)
     .eq("product_id", productId)
 
   if (errorItem) console.error("Fehler beim Prüfen des Warenkorbs:", errorItem)
@@ -27,7 +38,7 @@ export async function addCart(productId: number) {
   } else {
     // ~ Falls das Produkt noch nicht im Warenkorb ist, fügen wir es hinzu.
     const { error: insertError } = await supabase.from("cart_items").insert({
-      cart_id: 1,
+      cart_id: cartId,
       product_id: productId,
       quantity: 1,
     })
