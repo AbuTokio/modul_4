@@ -14,15 +14,27 @@ export async function uploadPhoto(file: File | null) {
 
   const filePath = `${user.id}/${file.name}`
 
-  const { error: storageError } = await supabase.storage
-    .from("profiles-img")
-    .upload(filePath, file, { cacheControl: "3600", upsert: false, contentType: file.type })
+  const { error: storageError } = await supabase.storage.from("profiles-img").upload(filePath, file, {
+    cacheControl: "3600",
+    upsert: true,
+    contentType: file.type,
+  })
 
   if (storageError) {
-    console.error("Fehler beim hochladen", storageError)
+    console.error("Fehler beim Hochladen:", storageError)
+    return null
   }
 
-  const { data: publicUrlImg } = supabase.storage.from("profiles-img").getPublicUrl(filePath)
-  console.log("Bild ist erfolgreich hochgeladen", publicUrlImg.publicUrl)
-  return publicUrlImg.publicUrl
+  const { data: signedUrlData, error: signedUrlError } = await supabase.storage
+    .from("profiles-img")
+    .createSignedUrl(filePath, 60 * 60 * 24 * 7)
+
+  if (signedUrlError) {
+    console.error("Fehler beim Erstellen der Signed URL:", signedUrlError)
+    return null
+  }
+
+  console.log("Bild erfolgreich hochgeladen:", signedUrlData.signedUrl)
+
+  return signedUrlData.signedUrl
 }
