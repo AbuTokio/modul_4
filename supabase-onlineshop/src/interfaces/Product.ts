@@ -5,5 +5,5 @@ export interface Product {
   title: string
   price: number
   quality: string
-  category: Category[]
+  category: Category
 }

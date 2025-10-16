@@ -29,6 +29,9 @@ export default function ProductItem({ product }: { product: Product }) {
         <p className="text-sm text-gray-600 dark:text-gray-400">
           Quality: <span className="font-medium">{product.quality}</span>
         </p>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          Category: <span className="font-medium">{product.category.category_name}</span>
+        </p>
       </div>
 
       <button
